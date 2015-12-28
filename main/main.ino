@@ -59,24 +59,46 @@ void loop() {
     while(sendButton.read() == 1){
       sendButton.update();
     }
-
-    Serial.println("Message: ");
-    for(int i = 0; i < charCounter; i++){
-      Serial.println(message[i]);
-    }
+    displayMessage();
   }
+}
+
+void displayMessage(){
+  Serial.println("Message: ");
+  
+    for(int i = 0; i < charCounter; i++){
+      int currentChar = message[i];
+      Serial.print(currentChar);
+      Serial.print(" | ");
+      Serial.println(currentChar, BIN);
+    }
+}
+
+int binaryToInt(String value){
+    long result = 0;
+    int exponent = 0;
+    for(int i = value.length(); i > 0; i--){
+      int currentLocation = value.substring(i-1,i).toInt();
+      if(currentLocation == 1){
+        result = result + pow((currentLocation*2), exponent) +1;
+      }
+      exponent++;
+    }
+    result -= 1;
+    return result;
 }
 
 void addSpaceToMessage(){
   message[charCounter] = 0;
   charCounter++;
 }
+
 void saveCurrentChar(){
   Serial.print("Save signal: ");
   Serial.print(charSignal);
   Serial.print(" -> ");
-  Serial.println(charSignal.toInt());
-  message[charCounter] = charSignal.toInt();
+  Serial.println(binaryToInt(charSignal));
+  message[charCounter] = binaryToInt(charSignal);
   charSignal = "";
   charCounter++;
 }
@@ -87,10 +109,10 @@ void detectSignalTime(){
   if(signalButton.read() == 1){
     totalNoSignalTime = millis() - noSignalStartTime;
 
-    if(totalNoSignalTime > 2000 && totalNoSignalTime < 4000){
+    if((totalNoSignalTime > 2000 && totalNoSignalTime < 4000) && noSignalStartTime != 0){
       Serial.println("New char detected");
       saveCurrentChar();
-    }else if(totalNoSignalTime > 7000){
+    }else if(totalNoSignalTime > 7000 && noSignalStartTime != 0){
       Serial.println("New word detected");
       addSpaceToMessage();
       saveCurrentChar();
