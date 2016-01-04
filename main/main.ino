@@ -4,7 +4,7 @@
  * Converting morsecode to characters on display with Arduino
  * School project in course DT223A - Digital Electronic System Design
  */
-
+/** HELLO! **/
   const int signalButtonPin(2);
   const int sendButtonPin(3);
 
