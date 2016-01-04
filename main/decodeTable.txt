@@ -1,0 +1,41 @@
+  Serial.println(codeToCharacter(deCode(6))); //A
+  Serial.println(codeToCharacter(deCode(149))); //B
+  Serial.println(codeToCharacter(deCode(153))); //C
+  Serial.println(codeToCharacter(deCode(37))); //D
+  Serial.println(codeToCharacter(deCode(1))); //E
+  Serial.println(codeToCharacter(deCode(89))); //F
+  Serial.println(codeToCharacter(deCode(41))); //G
+  Serial.println(codeToCharacter(deCode(85))); //H
+  Serial.println(codeToCharacter(deCode(5))); //I
+  Serial.println(codeToCharacter(deCode(106)));  //J
+  Serial.println(codeToCharacter(deCode(38))); //K
+  Serial.println(codeToCharacter(deCode(101))); //L
+  Serial.println(codeToCharacter(deCode(10))); //M
+  Serial.println(codeToCharacter(deCode(9))); //N
+  Serial.println(codeToCharacter(deCode(42))); //O
+  Serial.println(codeToCharacter(deCode(105))); //P
+  Serial.println(codeToCharacter(deCode(166))); //Q
+  Serial.println(codeToCharacter(deCode(25))); //R
+  Serial.println(codeToCharacter(deCode(21))); //S
+  Serial.println(codeToCharacter(deCode(2))); //T
+  Serial.println(codeToCharacter(deCode(22))); //U
+  Serial.println(codeToCharacter(deCode(86))); //V
+  Serial.println(codeToCharacter(deCode(26))); //W
+  Serial.println(codeToCharacter(deCode(150))); //X
+  Serial.println(codeToCharacter(deCode(154))); //Y
+  Serial.println(codeToCharacter(deCode(165))); //Z
+
+  
+  Serial.println(codeToCharacter(deCode(426))); //1
+  Serial.println(codeToCharacter(deCode(362))); //2
+  Serial.println(codeToCharacter(deCode(346))); //3
+  Serial.println(codeToCharacter(deCode(342))); //4
+  Serial.println(codeToCharacter(deCode(341))); //5
+  Serial.println(codeToCharacter(deCode(597))); //6
+  Serial.println(codeToCharacter(deCode(661))); //7
+  Serial.println(codeToCharacter(deCode(677))); //8
+  Serial.println(codeToCharacter(deCode(681))); //9
+  Serial.println(codeToCharacter(deCode(682))); //0
+
+  Serial.println(codeToCharacter(deCode(0))); //_ (Space)
+  Serial.println(codeToCharacter(deCode(1240))); //* (Unknown)
