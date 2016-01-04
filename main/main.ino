@@ -4,7 +4,6 @@
  * Converting morsecode to characters on display with Arduino
  * School project in course DT223A - Digital Electronic System Design
  */
-/** HELLO! **/
   const int signalButtonPin(2);
   const int sendButtonPin(3);
 
@@ -65,7 +64,9 @@ void loop() {
 
 void displayMessage(){
   Serial.println("Message: ");
-  
+  if(charSignal != ""){
+      saveCurrentChar();
+  }
     for(int i = 0; i < charCounter; i++){
       int currentChar = message[i];
       Serial.print(currentChar);
@@ -74,7 +75,7 @@ void displayMessage(){
     }
 }
 
-int binaryToInt(String value){
+int enCode(String value){
     long result = 0;
     int exponent = 0;
     for(int i = value.length(); i > 0; i--){
@@ -97,8 +98,8 @@ void saveCurrentChar(){
   Serial.print("Save signal: ");
   Serial.print(charSignal);
   Serial.print(" -> ");
-  Serial.println(binaryToInt(charSignal));
-  message[charCounter] = binaryToInt(charSignal);
+  Serial.println(enCode(charSignal));
+  message[charCounter] = enCode(charSignal);
   charSignal = "";
   charCounter++;
 }
