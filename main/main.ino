@@ -46,7 +46,7 @@ void setup() {
 
   Serial.begin(9600);
   Serial.println("Starting program :) ");
-  lcd.print("1234567890123456 . abcdefghifkl");
+  lcd.print("Morse -> Char");
   
   attachInterrupt(digitalPinToInterrupt(sendButtonPin), displayMessage, RISING);
 }
