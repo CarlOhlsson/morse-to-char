@@ -9,9 +9,13 @@
  
   const int signalButtonPin(2);
   const int sendButtonPin(3);
+  const int scrollRightPin(8);
+  const int scrollLeftPin(9);
 
   Bounce signalButton = Bounce(); 
   Bounce sendButton = Bounce();
+  Bounce scrollRightButton = Bounce();
+  Bounce scrollLeftButton = Bounce();
 
   unsigned long pressedTime;
   unsigned long noSignalStartTime;
@@ -25,6 +29,8 @@ void setup() {
   
   pinMode(signalButtonPin, INPUT);
   pinMode(sendButtonPin, INPUT);
+  pinMode(scrollRightPin, INPUT);
+  pinMode(scrollLeftPin, INPUT);
   
   signalButton.attach(signalButtonPin);
   signalButton.interval(1);
@@ -32,62 +38,86 @@ void setup() {
   sendButton.attach(sendButtonPin);
   sendButton.interval(5);
 
+  scrollRightButton.attach(scrollRightPin);
+  scrollRightButton.interval(5);
+
+  scrollLeftButton.attach(scrollLeftPin);
+  scrollLeftButton.interval(5);
+
   Serial.begin(9600);
-  Serial.println("Starting program :)");
+  Serial.println("Starting program :) ");
+  lcd.print("1234567890123456 . abcdefghifkl");
+  
+  attachInterrupt(digitalPinToInterrupt(sendButtonPin), displayMessage, RISING);
 }
 
 void loop() {
   signalButton.update();
   sendButton.update();
+  scrollRightButton.update();
+  scrollLeftButton.update();
+  
   detectSignalTime();
 
   if(charSignal.length() == 10){
     saveCurrentChar();
   }
   
-  if(pressedTime > 30 && pressedTime < 1000){
+  if(pressedTime > 30 && pressedTime < 600){
     charSignal += "01";
     Serial.println(charSignal);
     Serial.print(pressedTime);
     Serial.println(" - Short");
     pressedTime = 0;
-  }else if(pressedTime > 2000 && pressedTime < 4000){
+  }else if(pressedTime > 1000 && pressedTime < 2000){
     charSignal += "10";
     Serial.println(charSignal);
     Serial.print(pressedTime);
     Serial.println(" - Long");
     pressedTime = 0;
   }
-  
-  if(sendButton.read() == 1){
-    while(sendButton.read() == 1){
-      sendButton.update();
+
+  if(scrollLeftButton.read() == 1){
+    while(scrollLeftButton.read() == 1){
+      scrollLeftButton.update();
     }
-    displayMessage();
+    scrollLeft();
+  }
+  
+  if(scrollRightButton.read() == 1){
+    while(scrollRightButton.read() == 1){
+      scrollRightButton.update();
+    }
+    scrollRight();
   }
 }
 
 void displayMessage(){
-  String firstRow = "";
-  String secondRow = "";
-  Serial.println("Message: ");
-  if(charSignal != ""){
+ static unsigned long last_interrupt_time = 0;
+ unsigned long interrupt_time = millis();
+ // If interrupts come faster than 200ms, assume it's a bounce and ignore
+ if (interrupt_time - last_interrupt_time > 200) 
+ {
+    String firstRow = "";
+    Serial.println("Message: ");
+    if(charSignal != ""){
       saveCurrentChar();
-  }
+    }
+    lcd.clear();
+    //lcd.setCursor(0, 1);
     for(int i = 0; i < charCounter; i++){
       int currentChar = message[i];
       Serial.print(currentChar);
       Serial.print(" | ");
-      Serial.println(currentChar, BIN);
-      if(i <= 16){
-        firstRow += codeToCharacter(deCode(currentChar));
-      }else if(i > 16 && i <= 32){
-        secondRow += codeToCharacter(deCode(currentChar));
-      }
-      lcd.print(firstRow);
-      lcd.setCursor(0, 1);
-      lcd.print(secondRow);
+      Serial.print(currentChar, BIN);
+      Serial.print(" | ");
+      Serial.println(codeToCharacter(deCode(currentChar)));
+      firstRow += codeToCharacter(deCode(currentChar));
     }
+    lcd.print(firstRow);
+    charCounter = 0;
+ }
+ last_interrupt_time = interrupt_time;
 }
 
 int enCode(String value){
@@ -214,7 +244,9 @@ void saveCurrentChar(){
     Serial.print("Save signal: ");
     Serial.print(charSignal);
     Serial.print(" -> ");
-    Serial.println(enCode(charSignal));
+    Serial.print(enCode(charSignal));
+    Serial.print(" -> ");
+    Serial.println(codeToCharacter(charSignal));
     message[charCounter] = enCode(charSignal);
     charSignal = "";
     charCounter++;
@@ -243,6 +275,20 @@ void detectSignalTime(){
     pressedTime = millis() - startTime;
     //Serial.println(pressedTime);
     noSignalStartTime = millis();
+  }
+}
+
+void scrollLeft(){
+  for(int positionCounter = 0; positionCounter < 10; positionCounter++){
+    lcd.scrollDisplayLeft();
+    delay(150);
+  }
+}
+
+void scrollRight(){
+  for(int positionCounter = 0; positionCounter < 10; positionCounter++){
+    lcd.scrollDisplayRight();
+    delay(150);
   }
 }
 
