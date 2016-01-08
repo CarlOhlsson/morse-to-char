@@ -48,17 +48,17 @@ void setup() {
   scrollLeftButton.interval(5);
 
   Serial.begin(9600);
-  Serial.println("Starting program :) ");
+  Serial.println("Morsecode to character converter now running.");
   lcd.print("Morse -> Char");
   
   attachInterrupt(digitalPinToInterrupt(sendButtonPin), displayMessage, RISING);
 }
 
 void loop() {
-  signalButton.update();
   sendButton.update();
-  scrollRightButton.update();
+  signalButton.update();
   scrollLeftButton.update();
+  scrollRightButton.update();
   
   detectSignalTime();
 
@@ -68,15 +68,15 @@ void loop() {
   
   if(pressedTime > 30 && pressedTime < 600){
     charSignal += "01";
-    Serial.println(charSignal);
+    Serial.print("Short   | ");
     Serial.print(pressedTime);
-    Serial.println(" - Short");
+    Serial.println(" ms");
     pressedTime = 0;
   }else if(pressedTime > 1000 && pressedTime < 2000){
     charSignal += "10";
-    Serial.println(charSignal);
+    Serial.print("Long    | ");
     Serial.print(pressedTime);
-    Serial.println(" - Long");
+    Serial.println(" ms");
     pressedTime = 0;
   }
 
@@ -98,24 +98,22 @@ void loop() {
 void displayMessage(){
  static unsigned long last_interrupt_time = 0;
  unsigned long interrupt_time = millis();
- // If interrupts come faster than 200ms, assume it's a bounce and ignore
  if (interrupt_time - last_interrupt_time > 200) 
  {
     String firstRow = "";
-    Serial.println("Message: ");
     if(charSignal != ""){
       saveCurrentChar();
     }
     lcd.clear();
+    Serial.println("Message: ");
+    Serial.println("Char | int value | binary signal");
     for(int i = 0; i < charCounter; i++){
       int currentChar = message[i];
+      Serial.print(codeToCharacter(convert.decimalToBinary(currentChar)));
+      Serial.print(" | ");
       Serial.print(currentChar);
       Serial.print(" | ");
-      Serial.print(currentChar, BIN);
-      Serial.print(" | ");
-      //Serial.println(codeToCharacter(deCode(currentChar)));
-      Serial.println(codeToCharacter(convert.decimalToBinary(currentChar)));
-      //firstRow += codeToCharacter(deCode(currentChar));
+      Serial.println(currentChar, BIN);
       firstRow += codeToCharacter(convert.decimalToBinary(currentChar));
     }
     lcd.print(firstRow);
@@ -124,41 +122,8 @@ void displayMessage(){
  last_interrupt_time = interrupt_time;
 }
 
-int enCode(String value){
-    long result = 0;
-    int exponent = 0;
-    for(int i = value.length(); i > 0; i--){
-      int currentLocation = value.substring(i-1,i).toInt();
-      if(currentLocation == 1){
-        result = result + pow((currentLocation*2), exponent) +1;
-      }
-      exponent++;
-    }
-    result -= 1;
-    return result;
-}
-
-String deCode(int value){
-  String result = "";
-  if(value == 0){
-    return "0";
-  }
-  while(value > 0){
-    if((value % 2) == 0){
-      result = "0" + result;
-    }else{
-      result = "1" + result;
-    }
-    value /= 2;
-  }
-  return result;
-}
-
 String codeToCharacter(String value){
-  int valLength = value.length();
-  if((valLength % 2) != 0 && value != "0"){
-    value = "0" + value;
-  }
+  value = addZeroToBinary(value);
   if(value == "0110"){
     return "A";
   }else if(value == "10010101"){
@@ -239,21 +204,15 @@ String codeToCharacter(String value){
 }
 
 void addSpaceToMessage(){
-  Serial.println("Adding space to message");
+  Serial.println("Storing | space");
   message[charCounter] = 0;
   charCounter++;
 }
 
 void saveCurrentChar(){
   if(charSignal != ""){
-    Serial.print("Save signal: ");
-    Serial.print(charSignal);
-    Serial.print(" -> ");
-    //Serial.print(enCode(charSignal));
-    Serial.print(convert.binaryToDecimal(charSignal));
-    Serial.print(" -> ");
+    Serial.print("Storing | ");
     Serial.println(codeToCharacter(charSignal));
-    //message[charCounter] = enCode(charSignal);
     message[charCounter] = convert.binaryToDecimal(charSignal);
     charSignal = "";
     charCounter++;
@@ -267,10 +226,8 @@ void detectSignalTime(){
     totalNoSignalTime = millis() - noSignalStartTime;
 
     if((totalNoSignalTime > 2000 && totalNoSignalTime < 4000) && noSignalStartTime != 0){
-      Serial.println("New char detected");
       saveCurrentChar();
     }else if(totalNoSignalTime > 7000 && noSignalStartTime != 0){
-      Serial.println("New word detected");
       saveCurrentChar();
       addSpaceToMessage();
     }
@@ -280,7 +237,6 @@ void detectSignalTime(){
       signalButton.update();
     }
     pressedTime = millis() - startTime;
-    //Serial.println(pressedTime);
     noSignalStartTime = millis();
   }
 }
@@ -296,6 +252,15 @@ void scrollRight(){
   for(int positionCounter = 0; positionCounter < 10; positionCounter++){
     lcd.scrollDisplayRight();
     delay(150);
+  }
+}
+
+String addZeroToBinary(String value){
+  int valLength = value.length();
+  if((valLength % 2) != 0 && value != "0"){
+    return "0" + value;
+  }else{
+    return value;
   }
 }
 
