@@ -1,12 +1,15 @@
+#include <Convert.h>
 #include <Bounce2.h>
 #include <LiquidCrystal.h>
+
 
 /**
  * Converting morsecode to characters on display with Arduino
  * School project in course DT223A - Digital Electronic System Design
  */
   LiquidCrystal lcd(12, 11, 7, 6, 5, 4);
- 
+  Convert convert = Convert();
+  
   const int signalButtonPin(2);
   const int sendButtonPin(3);
   const int scrollRightPin(8);
@@ -104,15 +107,16 @@ void displayMessage(){
       saveCurrentChar();
     }
     lcd.clear();
-    //lcd.setCursor(0, 1);
     for(int i = 0; i < charCounter; i++){
       int currentChar = message[i];
       Serial.print(currentChar);
       Serial.print(" | ");
       Serial.print(currentChar, BIN);
       Serial.print(" | ");
-      Serial.println(codeToCharacter(deCode(currentChar)));
-      firstRow += codeToCharacter(deCode(currentChar));
+      //Serial.println(codeToCharacter(deCode(currentChar)));
+      Serial.println(codeToCharacter(convert.decimalToBinary(currentChar)));
+      //firstRow += codeToCharacter(deCode(currentChar));
+      firstRow += codeToCharacter(convert.decimalToBinary(currentChar));
     }
     lcd.print(firstRow);
     charCounter = 0;
@@ -228,13 +232,14 @@ String codeToCharacter(String value){
   }else if(value == "1010101010"){
     return "0";
   }else if(value == "0"){
-    return "_";
+    return " ";
   }else{
     return "*";
   }
 }
 
 void addSpaceToMessage(){
+  Serial.println("Adding space to message");
   message[charCounter] = 0;
   charCounter++;
 }
@@ -244,10 +249,12 @@ void saveCurrentChar(){
     Serial.print("Save signal: ");
     Serial.print(charSignal);
     Serial.print(" -> ");
-    Serial.print(enCode(charSignal));
+    //Serial.print(enCode(charSignal));
+    Serial.print(convert.binaryToDecimal(charSignal));
     Serial.print(" -> ");
     Serial.println(codeToCharacter(charSignal));
-    message[charCounter] = enCode(charSignal);
+    //message[charCounter] = enCode(charSignal);
+    message[charCounter] = convert.binaryToDecimal(charSignal);
     charSignal = "";
     charCounter++;
   }
@@ -264,8 +271,8 @@ void detectSignalTime(){
       saveCurrentChar();
     }else if(totalNoSignalTime > 7000 && noSignalStartTime != 0){
       Serial.println("New word detected");
-      addSpaceToMessage();
       saveCurrentChar();
+      addSpaceToMessage();
     }
 
     startTime = millis();
