@@ -10,7 +10,7 @@ Hardware specifications:
 
 
 Library usages:
-----------------------
+-------------------------
   Debounce: http://playground.arduino.cc/Code/Bounce
 
   Arduino Converter: https://github.com/CarlOhlsson/Arduino-Converter
