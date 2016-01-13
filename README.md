@@ -13,4 +13,4 @@ Library usages:
 -------------------------
   Debounce: http://playground.arduino.cc/Code/Bounce
 
-  Arduino Converter: https://github.com/CarlOhlsson/Arduino-Converter
+  Arduino Converter: https://github.com/CarlOhlsson/Arduino-Number-Converter
