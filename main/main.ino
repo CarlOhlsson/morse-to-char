@@ -210,7 +210,7 @@ void addSpaceToMessage(){
 }
 
 void saveCurrentChar(){
-  if(charSignal != ""){
+  if(charSignal != "" && charCounter < 180){
     Serial.print("Storing | ");
     Serial.println(codeToCharacter(charSignal));
     message[charCounter] = convert.binaryToDecimal(charSignal);
@@ -242,14 +242,14 @@ void detectSignalTime(){
 }
 
 void scrollLeft(){
-  for(int positionCounter = 0; positionCounter < 10; positionCounter++){
+  for(int positionCounter = 0; positionCounter < 16; positionCounter++){
     lcd.scrollDisplayLeft();
     delay(150);
   }
 }
 
 void scrollRight(){
-  for(int positionCounter = 0; positionCounter < 10; positionCounter++){
+  for(int positionCounter = 0; positionCounter < 16; positionCounter++){
     lcd.scrollDisplayRight();
     delay(150);
   }
